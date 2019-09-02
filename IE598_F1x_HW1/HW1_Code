@@ -35,6 +35,7 @@ plt.legend(iris.target_names)
 plt.xlabel('Sepal length')
 plt.ylabel('Sepal width')
 
+plt.show()
 #found a typo here... incorrect from book followed by corrected code
 #from sklearn.linear_modelsklearn._model import SGDClassifier
 from sklearn.linear_model import SGDClassifier
