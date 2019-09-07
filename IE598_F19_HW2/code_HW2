@@ -1,1 +1,13 @@
+import pandas as pd 
+df = pd.read_csv('Desktop/Treasury Squeeze test - DS1.CSV', header = None)
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
 
+
+k_range = range(1,26)
+scores = [] 
+for k in k_range:
+    knn = KNeighborsClassifier(n_neighbors = k)
+    knn.fit(X_train,y_train)
+    y_pred = knn.predict(X_test)
+    scores.append(metrics.accuracy_score(y_test,y_pred))
