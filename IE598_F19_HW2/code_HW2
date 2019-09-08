@@ -1,21 +1,39 @@
 import pandas as pd 
-df = pd.read_csv('Desktop/Treasury Squeeze test - DS1.CSV', header = None)
+df = pd.read_csv('Desktop/Treasury Squeeze test - DS1.CSV', header = None).to_numpy()
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score
+import matplotlib.pyplot as plt
+import numpy as np
+
+X = df[1:,:8]
+for i in range(1,901):
+    if(df[i,9] =='TRUE'):
+        df[i,9] = 1
+    else:
+        df[i,9] = 0
 
 
+y = df[1:,8]
+
+X_train, X_test, y_train, y_test = train_test_split(X, y,test_size=0.25, random_state=33)
 k_range = range(1,26)
 scores = [] 
 for k in k_range:
     knn = KNeighborsClassifier(n_neighbors = k)
     knn.fit(X_train,y_train)
     y_pred = knn.predict(X_test)
-    scores.append(metrics.accuracy_score(y_test,y_pred))
+    scores.append(accuracy_score(y_test,y_pred))
 
-
-
-
+plt.title('k-NN: Varying values of ks for test accuracy')
+plt.plot(k_range,scores)
+plt.legend()
+plt.xlabel('Value of k')
+plt.ylabel('Accuracy')
+plt.show()
+   
 print("My name is Guancheng Guo")
 print("My NetID is: gguo5")
 print("I hereby certify that I have read the University policy on Academic Integrity and that I am not in violation.")
+
 
