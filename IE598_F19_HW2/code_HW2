@@ -1,22 +1,16 @@
 import pandas as pd 
-df = pd.read_csv('Desktop/Treasury Squeeze test - DS1.CSV', header = None).to_numpy()
+from sklearn.tree import DecisionTreeClassifier
+df = pd.read_csv('Desktop/Treasury Squeeze test - DS1.CSV', header = None)
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score
 import matplotlib.pyplot as plt
 import numpy as np
 
-X = df[1:,:8]
-for i in range(1,901):
-    if(df[i,9] =='TRUE'):
-        df[i,9] = 1
-    else:
-        df[i,9] = 0
+X = df.iloc[1:,2:11]
+y = df.iloc[1:,11]
 
-
-y = df[1:,8]
-
-X_train, X_test, y_train, y_test = train_test_split(X, y,test_size=0.25, random_state=33)
+X_train, X_test, y_train, y_test = train_test_split(X, y,test_size=0.25, random_state=33,stratify = y)
 k_range = range(1,26)
 scores = [] 
 for k in k_range:
@@ -24,14 +18,29 @@ for k in k_range:
     knn.fit(X_train,y_train)
     y_pred = knn.predict(X_test)
     scores.append(accuracy_score(y_test,y_pred))
-
-plt.title('k-NN: Varying values of ks for test accuracy')
+plt.figure()
+plt.title('k-NN: Varying values of k for test accuracy')
 plt.plot(k_range,scores)
 plt.legend()
 plt.xlabel('Value of k')
 plt.ylabel('Accuracy')
 plt.show()
-   
+
+max_depth_range = range(1, 6)
+accuracy = [] 
+for depth in max_depth_range:
+    tree = DecisionTreeClassifier(max_depth = depth, random_state = 1)
+    tree.fit(X_train, y_train)
+    y_pred = tree.predict(X_test)
+    accuracy.append(accuracy_score(y_test,y_pred))
+plt.figure()
+plt.title('DecisionTree: Varying values of max_depth for test accuracy')
+plt.plot(max_depth_range,accuracy)
+plt.legend()
+plt.xlabel('max_depth')
+plt.ylabel('Accuracy')
+plt.show()
+
 print("My name is Guancheng Guo")
 print("My NetID is: gguo5")
 print("I hereby certify that I have read the University policy on Academic Integrity and that I am not in violation.")
