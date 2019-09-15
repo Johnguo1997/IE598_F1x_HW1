@@ -1,1 +1,140 @@
+import pandas as pd 
+import numpy as np 
+import matplotlib.pyplot as plt
+import seaborn as sns
+df = pd.read_csv('Desktop/HY_Universe_corporate bond.csv', header = None)
+from pandas import DataFrame
 
+df.head()
+df.tail()
+df.describe()
+#The plots below are run in different cells, so I did not add plt.figure() before each plot.
+#However, if you want to run all the codes simutaneously, you should add plt.figure() before each plot.
+
+#swarm plot for the bond_type column 
+#Other attibutes that involve types can be done in similar way
+count1,count2,count3,count4,count5 = 0,0,0,0,0
+scope = np.arange(1,2721)
+for i in scope:
+    if(df.iloc[i,29] == '1'):
+        count1 = count1 + 1
+    if(df.iloc[i,29] == '2'):
+        count2 = count2 + 1
+    if(df.iloc[i,29] == '3'):
+        count3 = count3 + 1
+    if(df.iloc[i,29] == '4'):
+        count4 = count4 + 1
+    if(df.iloc[i,29] == '5'):
+        count5 = count5 + 1  
+          
+data = [['bond_type 1',count1],['bond_type 2',count2],['bond_type 3', count3],['bond_type 4',count4],['bond_type 5', count5]]
+df_bondtype = pd.DataFrame(data,columns = ['bond_type','count'])
+sns.set()
+
+_ = sns.swarmplot(x = 'bond_type', y = 'count', data = df_bondtype)
+plt.title('bee swarm plot for the bond_type')
+plt.xlabel('bond_type')
+plt.ylabel('count')
+plt.show()
+
+
+# Attributes start from 1 to 37
+attribute16 = pd.to_numeric(df.iloc[1:,15])
+attribute21 = pd.to_numeric(df.iloc[1:,20])
+plt.scatter(attribute16,attribute21)
+plt.title('cross plot of LiquidityScore versus LIQ SCORE')
+plt.xlabel('LiquidityScore')
+plt.ylabel('LIQ SCORE')
+plt.show()
+# compute the variances of these two attributes  
+var_16 = np.var(attribute16)
+# 61.94672735044621
+var_21 = np.var(attribute21)
+#0.0061946727346922775
+print('variance of LiquidityScore: ',var_16)
+print('variance of LIQ SCORE: ',var_21)
+# compute the covariance of these two attributes
+covariance_matrix = np.cov(attribute16,attribute21)
+cov_scores = covariance_matrix[0,1]
+#0.619695018808
+print('covariance of LiquidityScore and LIQ SCORE: ',cov_scores)
+# compute the correlation of these two attributes
+cor_scores = np.corrcoef(attribute16,attribute21)[0,1]
+#1.0
+print('correlation of LiquidityScore and LIQ SCORE: ',cor_scores)
+
+
+# Attributes start from 1 to 37
+attribute11 = pd.to_numeric(df.iloc[1:,10])
+attribute23 = pd.to_numeric(df.iloc[1:,22])
+plt.scatter(attribute11,attribute23)
+plt.title('cross plot of Issued Amount versus volume_trades')
+plt.xlabel('Issued Amount')
+plt.ylabel('volume_trades')
+plt.show()
+# compute the variances of these two attributes  
+var_11 = np.var(attribute11)
+#3.365999113598263e+17
+var_23 = np.var(attribute23)
+#1.0560360330808512e+18
+print('variance of Issued Amount: ',var_11)
+print('variance of volume_trades: ',var_23)
+# compute the covariance of these two attributes
+covariance_matrix = np.cov(attribute11,attribute23)
+cov_scores = covariance_matrix[0,1]
+#1.94619442679e+17
+print('covariance of Issued Amount and volume_trades: ',cov_scores)
+# compute the correlation of these two attributes
+cor_scores = np.corrcoef(attribute11,attribute23)[0,1]
+# 0.326309877079
+print('correlation of Issued Amount and volume_trades: ',cor_scores)
+
+
+# function to compute the ECDF of 1-D array
+def ecdf(data):
+    
+    # Number of data points: n
+    n = len(data)
+
+    # x-data for the ECDF: x
+    x = np.sort(data)
+
+    # y-data for the ECDF: y
+    y = np.arange(1, n+1) / n
+
+    return x, y
+percentiles = np.array([2.5,25,50,75,97.5])
+attribute36 = pd.to_numeric(df.iloc[1:,35])
+att36_perc = np.percentile(attribute36,percentiles)
+print('percentiles of weekly_mean_ntrades: ',att36_perc)
+x_vers,y_vers = ecdf(attribute36)
+# Plot the ECDF of weekly_mean_ntrades for demonstration purpose only 
+_ = plt.plot(x_vers, y_vers, '.')
+plt.xlabel('weekly_mean_ntrades')
+plt.ylabel('ECDF')
+# Overlay percentiles as red diamonds.
+_ = plt.plot(att36_perc, percentiles/100, marker='D', color='red',
+         linestyle='none')
+plt.show()
+
+# Plot multiple ECDFs on the same plot
+attribute33 = pd.to_numeric(df.iloc[1:,32])
+attribute34 = pd.to_numeric(df.iloc[1:,33])
+attribute35 = pd.to_numeric(df.iloc[1:,34])
+df_t = pd.concat([attribute33,attribute34,attribute35],axis = 1, keys = ['weekly_median_volume','weekly_max_volume','weekly_min_volume'])
+#compute ECDFs
+x_set,y_set = ecdf(attribute33)
+x_vers,y_vers = ecdf(attribute34)
+x_virg,y_virg = ecdf(attribute35)
+
+# Plot all ECDFs on the same plot
+_ = plt.plot(x_set,y_set,marker='.',linestyle='none')
+_ = plt.plot(x_vers,y_vers,marker='.',linestyle='none')
+_ = plt.plot(x_virg,y_virg,marker='.',linestyle='none')
+
+# Annotate the plot
+plt.legend(('weekly_median_volume', 'weekly_max_volume', 'weekly_min_volume'), loc='lower right')
+_ = plt.xlabel('weekly median,max and min volume for this dataset')
+_ = plt.ylabel('ECDF')
+
+plt.show()
