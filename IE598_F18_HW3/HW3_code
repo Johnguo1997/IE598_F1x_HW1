@@ -38,6 +38,10 @@ plt.ylabel('count')
 plt.show()
 
 
+print("My name is Guancheng Guo")
+print("My NetID is: gguo5")
+print("I hereby certify that I have read the University policy on Academic Integrity and that I am not in violation.")
+
 # Attributes start from 1 to 37
 attribute16 = pd.to_numeric(df.iloc[1:,15])
 attribute21 = pd.to_numeric(df.iloc[1:,20])
