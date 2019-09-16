@@ -30,17 +30,12 @@ for i in scope:
 data = [['bond_type 1',count1],['bond_type 2',count2],['bond_type 3', count3],['bond_type 4',count4],['bond_type 5', count5]]
 df_bondtype = pd.DataFrame(data,columns = ['bond_type','count'])
 sns.set()
-
 _ = sns.swarmplot(x = 'bond_type', y = 'count', data = df_bondtype)
 plt.title('bee swarm plot for the bond_type')
 plt.xlabel('bond_type')
 plt.ylabel('count')
 plt.show()
 
-
-print("My name is Guancheng Guo")
-print("My NetID is: gguo5")
-print("I hereby certify that I have read the University policy on Academic Integrity and that I am not in violation.")
 
 # Attributes start from 1 to 37
 attribute16 = pd.to_numeric(df.iloc[1:,15])
@@ -107,6 +102,8 @@ def ecdf(data):
     y = np.arange(1, n+1) / n
 
     return x, y
+    
+    
 percentiles = np.array([2.5,25,50,75,97.5])
 attribute36 = pd.to_numeric(df.iloc[1:,35])
 att36_perc = np.percentile(attribute36,percentiles)
@@ -142,3 +139,9 @@ _ = plt.xlabel('weekly median,max and min volume for this dataset')
 _ = plt.ylabel('ECDF')
 
 plt.show()
+
+
+print("My name is Guancheng Guo")
+print("My NetID is: gguo5")
+print("I hereby certify that I have read the University policy on Academic Integrity and that I am not in violation.")
+
