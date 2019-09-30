@@ -1,0 +1,128 @@
+import pandas as pd 
+import numpy as np 
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+
+df = pd.read_csv('Desktop/hw5_treasury yield curve data.csv', header = None).dropna()
+df.head()
+df.tail()
+df.describe()
+
+
+X = df.iloc[1:8071,1:31]
+y = df.iloc[1:8071,31]
+X_train, X_test, y_train, y_test = train_test_split(X,y, test_size = 0.15, random_state=42)
+
+
+
+from sklearn.preprocessing import StandardScaler
+
+sc = StandardScaler()
+X_train_std = sc.fit_transform(X_train)
+X_test_std = sc.transform(X_test)
+cov_mat = np.cov(X_train_std.T)
+eigen_vals, eigen_vecs = np.linalg.eig(cov_mat)
+tot = sum(eigen_vals)
+var_exp = [(i / tot) for i in sorted(eigen_vals, reverse=True)]
+cum_var_exp = np.cumsum(var_exp)
+import matplotlib.pyplot as plt
+
+
+plt.bar(range(1, 31), var_exp, alpha=0.5, align='center',
+        label='individual explained variance')
+plt.step(range(1, 31), cum_var_exp, where='mid',
+         label='cumulative explained variance')
+plt.ylabel('Explained variance ratio')
+plt.xlabel('Principal component index')
+plt.legend(loc='best')
+plt.tight_layout()
+
+plt.show()
+
+
+from sklearn.decomposition import PCA
+
+pca = PCA(n_components = 3)
+X_train_pca = pca.fit_transform(X_train_std)
+pca.explained_variance_ratio_
+
+plt.bar(range(1, 4), pca.explained_variance_ratio_, alpha=0.5, align='center',label='individual explained variance')
+plt.step(range(1, 4), np.cumsum(pca.explained_variance_ratio_), where='mid',label='cumulative explained variance')
+plt.ylabel('Explained variance ratio')
+plt.xlabel('Principal components')
+plt.legend(loc='best')
+plt.tight_layout()
+plt.show()
+
+#Logistic Regression
+#PCA
+X_test_pca = pca.transform(X_test_std)
+from sklearn.linear_model import LogisticRegression
+lr = LogisticRegression()
+lr = lr.fit(X_train_pca, y_train)
+#Compute MSE AND R2 scores
+from sklearn.metrics import r2_score
+from sklearn.metrics import mean_squared_error
+y_train_pred = lr.predict(X_train_pca)
+y_test_pred = lr.predict(X_test_pca)
+print('RMSE train: %.3f, test: %.3f' % (
+        np.sqrt(mean_squared_error(y_train, y_train_pred)),
+        np.sqrt(mean_squared_error(y_test, y_test_pred))))
+print('R^2 train: %.3f, test: %.3f' % (
+        r2_score(y_train, y_train_pred),
+        r2_score(y_test, y_test_pred)))
+        
+        
+ #All 
+lr = LogisticRegression()
+lr = lr.fit(X_train, y_train)
+#Compute RMSE AND R2 scores
+from sklearn.metrics import r2_score
+from sklearn.metrics import mean_squared_error
+y_train_pred = lr.predict(X_train)
+y_test_pred = lr.predict(X_test)
+print('RMSE train: %.3f, test: %.3f' % (
+        np.sqrt(mean_squared_error(y_train, y_train_pred)),
+        np.sqrt(mean_squared_error(y_test, y_test_pred))))
+print('R^2 train: %.3f, test: %.3f' % (
+        r2_score(y_train, y_train_pred),
+        r2_score(y_test, y_test_pred)))
+
+
+
+#SVM Regression
+
+from sklearn import svm
+#PCA
+clf = svm.SVR()
+clf.fit(X_train_pca, y_train) 
+#Compute RMSE AND R2 scores
+y_train_pred = clf.predict(X_train_pca)
+y_test_pred = clf.predict(X_test_pca)
+
+print('RMSE train: %.3f, test: %.3f' % (
+        np.sqrt(mean_squared_error(y_train, y_train_pred)),
+        np.sqrt(mean_squared_error(y_test, y_test_pred))))
+print('R^2 train: %.3f, test: %.3f' % (
+        r2_score(y_train, y_train_pred),
+        r2_score(y_test, y_test_pred)))
+
+
+#ALL
+clf = svm.SVR()
+clf.fit(X_train, y_train) 
+#Compute RMSE AND R2 scores
+y_train_pred = clf.predict(X_train)
+y_test_pred = clf.predict(X_test)
+
+print('RMSE train: %.3f, test: %.3f' % (
+        np.sqrt(mean_squared_error(y_train, y_train_pred)),
+        np.sqrt(mean_squared_error(y_test, y_test_pred))))
+print('R^2 train: %.3f, test: %.3f' % (
+        r2_score(y_train, y_train_pred),
+        r2_score(y_test, y_test_pred)))
+        
+        
+print("My name is Guancheng Guo")
+print("My NetID is: gguo5")
+print("I hereby certify that I have read the University policy on Academic Integrity and that I am not in violation.")
