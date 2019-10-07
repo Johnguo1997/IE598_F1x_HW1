@@ -1,0 +1,54 @@
+import pandas as pd
+from sklearn.tree import DecisionTreeClassifier
+import numpy as np 
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+
+
+df = pd.read_csv('Desktop/ccdefault.csv',header = None)
+
+
+
+#Part 1
+X = df.iloc[1:,1:24]
+y = df.iloc[1:,24]
+A = range(1,11)
+scores_test = []
+scores_train = []
+for a in A:
+    X_train, X_test, y_train, y_test = train_test_split(X, y,test_size=0.1, random_state = a,stratify = y)
+    tree = DecisionTreeClassifier()
+    tree.fit(X_train, y_train)
+    
+    scores_test.append(tree.score(X_test,y_test))  
+    scores_train.append(tree.score(X_train,y_train))
+print('Out-of-sample accuracy scores:',scores_test)
+print('In-sample accuracy scores:',scores_train)
+print('Out-of-sample accuracy scores mean:',np.mean(scores_test))
+print('In-sample accuracy scores mean:',np.mean(scores_train))
+print('Out-of-sample accuracy scores standard deviation:',np.std(scores_test))
+print('In-sample accuracy scores standard deviation:',np.std(scores_train))
+
+
+
+#Part 2
+from sklearn.model_selection import cross_val_score,StratifiedKFold
+
+X_train, X_test, y_train, y_test = train_test_split(X, y,test_size=0.1, random_state = 42,stratify = y)
+tree = DecisionTreeClassifier()
+tree.fit(X_train, y_train)
+      
+scores_test_cv = cross_val_score(estimator = tree,X= X_test,y = y_test, cv = 10)  
+scores_train_cv = cross_val_score(estimator = tree,X = X_train,y = y_train,cv = 10)
+    
+print('Out-of-sample cross validation accuracy scores:',scores_test_cv)
+print('In-sample cross validation accuracy scores:',scores_train_cv)   
+print('Out-of-sample cross validation accuracy scores mean:',np.mean(scores_test_cv))
+print('In-sample cross validation accuracy scores mean:',np.mean(scores_train_cv))
+print('Out-of-sample cross validation accuracy scores standard deviation ',np.std(scores_test_cv))
+print('In-sample cross validation accuracy scores standard deviation ',np.std(scores_train_cv))
+
+
+print("My name is Guancheng Guo")
+print("My NetID is: gguo5")
+print("I hereby certify that I have read the University policy on Academic Integrity and that I am not in violation.")
