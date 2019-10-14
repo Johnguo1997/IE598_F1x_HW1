@@ -1,0 +1,56 @@
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import cross_val_score
+import numpy as np
+
+#The first column of the dataset is removed.
+df = pd.read_csv('Desktop/ccdefault.csv',header = None)
+
+X = df.iloc[1:,0:23]
+y = df.iloc[1:,23]
+X_train, X_test, y_train, y_test = train_test_split(X, y,test_size=0.1, random_state = 3,stratify = y)
+
+#part 1
+forest = RandomForestClassifier(n_estimators = 500, random_state=1)
+forest.fit(X_train,y_train)
+scores_test_cv = cross_val_score( forest, X_test, y_test, cv = 10)  
+scores_train_cv = cross_val_score( forest, X_train, y_train,cv = 10)
+    
+print('Out-of-sample cross validation accuracy scores: %0.6f (+/- %0.6f)'% (np.mean(scores_test_cv), np.std(scores_test_cv) * 2))
+print('In-sample cross validation accuracy scores: %0.6f (+/- %0.6f)'% (np.mean(scores_train_cv), np.std(scores_train_cv) * 2))
+
+
+
+
+#part 2
+import matplotlib.pyplot as plt
+feat_labels = df.iloc[0,0:23]
+
+importances = forest.feature_importances_
+
+indices = np.argsort(importances)[::-1]
+
+for f in range(X_train.shape[1]):
+    print("%2d) %-*s %f" % (f + 1, 30, 
+                            feat_labels[indices[f]], 
+                            importances[indices[f]]))
+
+
+plt.title('Feature Importance')
+plt.bar(range(X_train.shape[1]), 
+        importances[indices],
+        align='center')
+
+plt.xticks(range(X_train.shape[1]), 
+           feat_labels[indices], rotation=90)
+plt.xlim([-1, X_train.shape[1]])
+plt.tight_layout()
+#plt.savefig('images/04_09.png', dpi=300)
+plt.show()
+
+
+
+print("My name is Guancheng Guo")
+print("My NetID is: gguo5")
+print("I hereby certify that I have read the University policy on Academic Integrity and that I am not in violation.")
