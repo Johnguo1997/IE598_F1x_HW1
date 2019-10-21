@@ -1,0 +1,217 @@
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+
+
+df = pd.read_csv('Desktop/MLF_GP1_CreditScore.csv',header = None)
+
+df.head()
+
+df.tail()
+
+df.describe()
+
+feat_labels = df.iloc[0,0:26]
+importances = forest.feature_importances_
+
+
+indices = np.argsort(importances)[::-1]
+
+for f in range(X_train.shape[1]):
+    print("%2d) %-*s %f" % (f + 1, 30, 
+                            feat_labels[indices[f]], 
+                            importances[indices[f]]))
+
+
+plt.title('Feature Importance')
+plt.bar(range(X_train.shape[1]), 
+        importances[indices],
+        align='center')
+
+plt.xticks(range(X_train.shape[1]), 
+           feat_labels[indices], rotation=90)
+plt.xlim([-1, X_train.shape[1]])
+plt.tight_layout()
+
+plt.show()
+
+#binary class
+#Preprocessing, feature extraction, feature selection
+from sklearn.model_selection import train_test_split
+X = df.iloc[1:,0:26]
+y = df.iloc[1:,26]
+X_train, X_test, y_train, y_test = train_test_split(X,y, test_size = 0.3, random_state=42,stratify = y)
+
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score
+from sklearn.tree import DecisionTreeClassifier
+from sklearn import svm
+#KNN
+knn = KNeighborsClassifier()
+knn.fit(X_train,y_train)
+y_pred = knn.predict(X_test)
+y_pred_train = knn.predict(X_train)
+score = accuracy_score(y_test,y_pred)
+score_train = accuracy_score(y_train,y_pred_train)
+print('KNN Classifier out-of-sample Accuracy Score',score)
+print('KNN Classifier in-sample Accuracy Score',score_train)
+
+
+#DecisionTree
+tree = DecisionTreeClassifier(random_state = 1)
+tree.fit(X_train, y_train)
+y_pred = tree.predict(X_test)
+y_pred_train = tree.predict(X_train)
+score = accuracy_score(y_test,y_pred)
+score_train = accuracy_score(y_train,y_pred_train)
+print('DecisionTree Classifier out-of-sample Accuracy Score',score)
+print('DecisionTree Classifier in-sample Accuracy Score',score_train)
+
+
+
+#SVC
+clf = svm.SVC(kernel = 'rbf',gamma = 0.1, C= 10.0,random_state = 1)
+clf.fit(X_train,y_train)
+y_pred = clf.predict(X_test)
+y_pred_train = clf.predict(X_train)
+score_train = accuracy_score(y_train,y_pred_train)
+score = accuracy_score(y_test,y_pred)
+print('SVC Classifier out-of-sample Accuracy Score',score)
+print('SVC Classifier in-sample Accuracy Score',score_train)
+
+#Hyperparameter Tuning
+from sklearn.model_selection import GridSearchCV
+clf = svm.SVC(random_state = 1)
+param_range = [0.0001,0.01,0.1,1.0,10.0,100.0,1000.0]
+param_grid = { 'C': param_range,'gamma':param_range,'kernel': ['rbf']}
+gs = GridSearchCV(estimator = clf,param_grid = param_grid,scoring = 'accuracy', cv = 6, n_jobs = -1)
+gs = gs.fit(X_train,y_train)
+print(gs.best_score_)
+print(gs.best_params_)
+
+#Ensembling
+from sklearn.ensemble import RandomForestClassifier
+
+
+forest = RandomForestClassifier(n_estimators = 350,min_samples_leaf = 2,random_state = 1)
+forest.fit(X_train,y_train)
+y_pred = forest.predict(X_test)
+y_pred_train = forest.predict(X_train)
+score_train = accuracy_score(y_train,y_pred_train)
+score = accuracy_score(y_test,y_pred)
+print('RandomForest Classifier out-of-sample Accuracy Score',score)
+print('RandomForest Classifier in-sample Accuracy Score',score_train)
+    
+params_rf = {
+    'n_estimators':[100,350,500],
+    'min_samples_leaf':[2,10,30]
+    
+}
+rf = RandomForestClassifier(random_state = 1)
+grid_rf = GridSearchCV(estimator=rf,
+                       param_grid=params_rf,
+                       scoring='accuracy',
+                       cv=6,
+                       n_jobs=-1)
+grid_rf = grid_rf.fit(X_train,y_train)
+print(grid_rf.best_score_)
+print(grid_rf.best_params_)
+
+
+
+#multiclass
+#Preprocessing, feature extraction, feature selection
+from sklearn.model_selection import train_test_split
+X = df.iloc[1:,0:26]
+y = df.iloc[1:,27]
+X_train, X_test, y_train, y_test = train_test_split(X,y, test_size = 0.3, random_state=42,stratify = y)
+
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score
+from sklearn.tree import DecisionTreeClassifier
+from sklearn import svm
+#KNN
+knn = KNeighborsClassifier()
+knn.fit(X_train,y_train)
+y_pred = knn.predict(X_test)
+y_pred_train = knn.predict(X_train)
+score = accuracy_score(y_test,y_pred)
+score_train = accuracy_score(y_train,y_pred_train)
+print('KNN Classifier out-of-sample Accuracy Score',score)
+print('KNN Classifier in-sample Accuracy Score',score_train)
+
+#DecisionTree
+tree = DecisionTreeClassifier(max_depth = 21,random_state = 1)
+tree.fit(X_train, y_train)
+y_pred = tree.predict(X_test)
+y_pred_train = tree.predict(X_train)
+score = accuracy_score(y_test,y_pred)
+score_train = accuracy_score(y_train,y_pred_train)
+print('DecisionTree Classifier out-of-sample Accuracy Score',score)
+print('DecisionTree Classifier in-sample Accuracy Score',score_train)
+
+#SVC
+clf = svm.SVC(random_state = 1)
+clf.fit(X_train,y_train)
+y_pred = clf.predict(X_test)
+y_pred_train = clf.predict(X_train)
+score_train = accuracy_score(y_train,y_pred_train)
+score = accuracy_score(y_test,y_pred)
+print('SVC Classifier out-of-sample Accuracy Score',score)
+print('SVC Classifier in-sample Accuracy Score',score_train)
+
+#Hyperparameter Tuning
+import numpy as np
+max_depth_range = range(1, 200)
+accuracy = [] 
+for depth in max_depth_range:
+    tree = DecisionTreeClassifier(max_depth = depth,random_state = 1)
+    tree.fit(X_train, y_train)
+    y_pred = tree.predict(X_test)
+    accuracy.append(accuracy_score(y_test,y_pred))
+plt.figure()
+plt.title('DecisionTree: Varying values of max_depth for test accuracy')
+plt.plot(max_depth_range,accuracy)
+
+
+#Ensembling
+from sklearn.ensemble import RandomForestClassifier
+
+
+forest = RandomForestClassifier(n_estimators = 500,min_samples_leaf = 2,random_state = 1)
+forest.fit(X_train,y_train)
+y_pred = forest.predict(X_test)
+y_pred_train = forest.predict(X_train)
+score_train = accuracy_score(y_train,y_pred_train)
+score = accuracy_score(y_test,y_pred)
+print('RandomForest Classifier out-of-sample Accuracy Score',score)
+
+from sklearn.model_selection import GridSearchCV
+params_rf = {
+    'n_estimators':[100,350,500],
+    'min_samples_leaf':[2,10,30]
+    
+}
+rf = RandomForestClassifier(random_state = 1)
+grid_rf = GridSearchCV(estimator=rf,
+                       param_grid=params_rf,
+                       scoring='accuracy',
+                       cv= 6,
+                       n_jobs=-1)
+grid_rf = grid_rf.fit(X_train,y_train)
+print(grid_rf.best_score_)
+print(grid_rf.best_params_)
+print('RandomForest Classifier in-sample Accuracy Score',score_train)
+
+plt.xlabel('max_depth')
+plt.ylabel('Accuracy')
+plt.show()
+max_depth = max_depth_range[np.argmax(accuracy)]
+print('best max_depth',max_depth)
+
+
+
+print("My name is Guancheng Guo")
+print("My NetID is: gguo5")
+print("I hereby certify that I have read the University policy on Academic Integrity and that I am not in violation.")
